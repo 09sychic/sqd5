@@ -16,4 +16,4 @@
 2. Paste the following command:
 
 ```powershell
-iwr 'https://is.gd/T2aQPt' -UseBasicParsing | iex
+iwr 'https://raw.githubusercontent.com/09sychic/sqd5/refs/heads/main/sqd5.ps1' -UseBasicParsing | iex
