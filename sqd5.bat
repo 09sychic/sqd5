@@ -1,106 +1,90 @@
 @echo off
-rem extract-wifi-elevate-fixed.bat
-rem Drops results to %USERPROFILE%\Downloads\wlan_passwords.txt
-rem Works on Windows 7/8/10/11 (tries to handle common localizations)
+REM sqd5.bat
+REM Place in: %USERPROFILE%\Downloads
+REM Run as Administrator.
 
-setlocal enabledelayedexpansion
-
-:: ---- Self-elevate ----
+REM Check for administrator privileges
 net session >nul 2>&1
-if errorlevel 1 (
-    echo Requesting elevation...
-    powershell -NoProfile -WindowStyle Hidden -Command "Start-Process -FilePath '%~f0' -ArgumentList '' -Verb RunAs" >nul 2>&1
-    if errorlevel 1 (
-        echo Elevation failed or was cancelled.
-        exit /b 1
-    )
+if %errorLevel% neq 0 (
+    echo This script must run as Administrator. Run it elevated ^(Right-click Run as Administrator^).
+    pause
+    exit /b 1
+)
+
+REM Set output file
+set "outFile=%USERPROFILE%\Downloads\wlan_passwords.txt"
+
+REM Create/clear output file with timestamp
+echo Exported on: %date% %time% > "%outFile%"
+if %errorLevel% neq 0 (
+    echo Cannot write to %outFile%. Check permissions.
+    pause
+    exit /b 1
+)
+
+REM Get WLAN profiles
+echo.
+echo Extracting WLAN profiles...
+echo.
+
+REM Create temporary file for profiles
+set "tempProfiles=%temp%\wlan_profiles_temp.txt"
+netsh wlan show profiles 2>nul | findstr "All User Profile" > "%tempProfiles%"
+
+REM Check if any profiles found
+if not exist "%tempProfiles%" (
+    echo No WLAN profiles found. >> "%outFile%"
+    echo No WLAN profiles found.
+    pause
     exit /b 0
 )
 
-:: ---- files ----
-set "OUTDIR=%USERPROFILE%\Downloads"
-if not exist "%OUTDIR%" mkdir "%OUTDIR%" 2>nul
-set "OUTFILE=%OUTDIR%\wlan_passwords.txt"
-set "TMP_PROFILES=%TEMP%\wlan_profiles.tmp"
-set "TMP_LINES=%TEMP%\wlan_profiles_lines.tmp"
-set "TMP_INFO=%TEMP%\wlan_info.tmp"
-set "TMP_KEY=%TEMP%\wlan_key_line.tmp"
-
-:: ---- header ----
-(
-  echo Exported on: %DATE% %TIME%
-  echo.
-) > "%OUTFILE%"
-
-:: ---- enumerate profiles ----
-netsh wlan show profiles > "%TMP_PROFILES%" 2>nul
-if not exist "%TMP_PROFILES%" (
-    echo Failed to run netsh or no WLAN component present. >> "%OUTFILE%"
-    echo No profiles found.
-    goto :cleanup
+REM Process each profile
+for /f "tokens=2 delims=:" %%i in ('type "%tempProfiles%"') do (
+    call :ProcessProfile "%%i"
 )
 
-:: Try multiple common markers for localization
-findstr /i /c:"All User Profile" /c:"All User Profiles" /c:"Perfil de todos los usuarios" /c:"Perfil" /c:"Perfil de usuario" /c:"Profil" /c:"Профиль" /c:"所有用户配置文件" "%TMP_PROFILES%" > "%TMP_LINES%" 2>nul
+REM Clean up temp file
+del "%tempProfiles%" 2>nul
 
-:: If still empty, attempt fallback: lines containing ":" and "Profile"/"Perfil"/"Profil"
-if not exist "%TMP_LINES%" (
-    type "%TMP_PROFILES%" | findstr /R ":" > "%TMP_LINES%" 2>nul
-)
-
-if not exist "%TMP_LINES%" (
-    echo No WLAN profiles found. >> "%OUTFILE%"
-    echo No profiles found.
-    goto :cleanup
-)
-
-:: ---- parse each candidate line for SSID ----
-for /f "usebackq delims=" %%L in ("%TMP_LINES%") do (
-    rem attempt to split on colon and take right side
-    for /f "tokens=1* delims=:" %%A in ("%%L") do (
-        set "PART=%%B"
-        if defined PART (
-            rem trim leading spaces
-            for /f "tokens=* delims= " %%S in ("!PART!") do set "SSID=%%S"
-            if defined SSID (
-                rem remove all double quotes
-                set "SSID=!SSID:"=!"
-                rem skip empty or header-like lines
-                if not "!SSID!"=="" (
-                    rem query profile details quietly
-                    netsh wlan show profile name="!SSID!" key=clear > "%TMP_INFO%" 2>nul
-                    if exist "%TMP_INFO%" (
-                        rem look for key content using several common markers
-                        findstr /i /c:"Key Content" /c:"Contenido de la clave" /c:"Conteúdo da chave" /c:"Contenu de la clé" /c:"Ключевой" /c:"키 콘텐츠" /c:"密钥内容" "%TMP_INFO%" > "%TMP_KEY%" 2>nul
-                        if exist "%TMP_KEY%" (
-                            for /f "usebackq tokens=1* delims=:" %%K in ("%TMP_KEY%") do (
-                                set "RAWKEY=%%L"
-                                for /f "tokens=* delims= " %%P in ("!RAWKEY!") do set "KEY=%%P"
-                                if defined KEY (
-                                    (
-                                      echo SSID: !SSID!
-                                      echo Password: !KEY!
-                                      echo ------------------------
-                                    ) >> "%OUTFILE%"
-                                )
-                            )
-                            del "%TMP_KEY%" 2>nul
-                        )
-                        del "%TMP_INFO%" 2>nul
-                    )
-                )
-            )
-        )
-    )
-)
-
-echo Done. Results saved to: "%OUTFILE%"
-type "%OUTFILE%"
-
-:cleanup
-del "%TMP_PROFILES%" 2>nul
-del "%TMP_LINES%" 2>nul
-del "%TMP_INFO%" 2>nul
-del "%TMP_KEY%" 2>nul
-endlocal
+echo. >> "%outFile%"
+echo Done. Results saved to: %outFile% >> "%outFile%"
+echo.
+echo Done. Results saved to: %outFile%
+pause
 exit /b 0
+
+:ProcessProfile
+REM Remove leading/trailing spaces from profile name
+set "profileName=%~1"
+set "profileName=%profileName: =%"
+if "%profileName%"=="" goto :eof
+
+echo Processing: %profileName%
+
+REM Get profile details with password
+set "tempDetail=%temp%\wlan_detail_temp.txt"
+netsh wlan show profile name="%profileName%" key=clear 2>nul > "%tempDetail%"
+
+REM Extract password
+set "password="
+for /f "tokens=2 delims=:" %%j in ('findstr "Key Content" "%tempDetail%" 2^>nul') do (
+    set "password=%%j"
+)
+
+REM Clean up password (remove leading space)
+if defined password (
+    set "password=%password:~1%"
+) else (
+    set "password=<No password saved or open network>"
+)
+
+REM Write to output file
+echo. >> "%outFile%"
+echo SSID: %profileName% >> "%outFile%"
+echo Password: %password% >> "%outFile%"
+echo ------------------------ >> "%outFile%"
+
+REM Clean up temp file
+del "%tempDetail%" 2>nul
+goto :eof
