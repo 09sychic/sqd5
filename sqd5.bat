@@ -1,48 +1,87 @@
 @echo off
-REM run-extract-silent.bat
-REM - Saves SSIDs and saved passwords to %USERPROFILE%\Downloads\wlan_passwords.txt
-REM - Skips profiles with no saved password
-REM - Elevates (UAC prompt). After elevation, extraction runs hidden.
-REM - No console output unless an error occurs.
+rem extract-wifi-elevate.bat
+rem Save to: %USERPROFILE%\Downloads\extract-wifi-elevate.bat
+rem This script will relaunch itself with Administrator privileges if not already elevated.
 
-:: Self-elevate if not running as admin
+setlocal enabledelayedexpansion
+
+:: --- self-elevate if not admin ---
 net session >nul 2>&1
-if %errorlevel% neq 0 (
-    powershell -NoProfile -Command "Start-Process -FilePath '%~f0' -ArgumentList 'elev' -Verb RunAs"
-    exit /b
-)
-
-:: If launched elevated, run hidden PowerShell to do the actual work
-if /I "%1"=="elev" (
-    set "TMPPS1=%TEMP%\_extract_wifi_hidden.ps1"
-
-    > "%TMPPS1%" echo # temporary PS1 created by run-extract-silent.bat
-    >> "%TMPPS1%" echo $outFile = Join-Path $env:USERPROFILE 'Downloads\wlan_passwords.txt'
-    >> "%TMPPS1%" echo "Exported on: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" ^| Out-File -FilePath $outFile -Encoding UTF8 -Force
-    >> "%TMPPS1%" echo '' ^| Out-File -FilePath $outFile -Append -Encoding UTF8
-    >> "%TMPPS1%" echo $profiles = netsh wlan show profiles 2^>^$null ^| Select-String 'All User Profile' ^| ForEach-Object { $_.ToString().Split(':',2)[1].Trim() } ^| Sort-Object -Unique
-    >> "%TMPPS1%" echo if (-not $profiles) { 'No WLAN profiles found.' ^| Out-File -FilePath $outFile -Append -Encoding UTF8; exit 0 }
-    >> "%TMPPS1%" echo foreach ($p in $profiles) {
-    >> "%TMPPS1%" echo     $info = netsh wlan show profile name="^$p" key=clear 2^>^$null
-    >> "%TMPPS1%" echo     $key = $info ^| Select-String 'Key Content' ^| ForEach-Object { $_.ToString().Split(':',2)[1].Trim() } ^| ForEach-Object { $_ } -join ''
-    >> "%TMPPS1%" echo     if ($key -and $key.Trim().Length -gt 0) {
-    >> "%TMPPS1%" echo         "WLAN: ^$p" ^| Out-File -FilePath $outFile -Append -Encoding UTF8
-    >> "%TMPPS1%" echo         "PASSWORD: ^$key" ^| Out-File -FilePath $outFile -Append -Encoding UTF8
-    >> "%TMPPS1%" echo         '' ^| Out-File -FilePath $outFile -Append -Encoding UTF8
-    >> "%TMPPS1%" echo         '----------------------------------------' ^| Out-File -FilePath $outFile -Append -Encoding UTF8
-    >> "%TMPPS1%" echo         '' ^| Out-File -FilePath $outFile -Append -Encoding UTF8
-    >> "%TMPPS1%" echo     }
-    >> "%TMPPS1%" echo }
-    >> "%TMPPS1%" echo # done
-
-    powershell -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File "%TMPPS1%"
-
-    if exist "%TMPPS1%" del /f /q "%TMPPS1%" >nul 2>&1
-
+if errorlevel 1 (
+    echo Requesting elevation...
+    powershell -NoProfile -Command "Start-Process -FilePath '%~f0' -ArgumentList '' -Verb RunAs" >nul 2>&1
+    if errorlevel 1 (
+        echo Failed to request elevation or user cancelled.
+        exit /b 1
+    )
     exit /b 0
 )
 
-:: If reached here, script is running elevated but not with the 'elev' arg.
-:: Relaunch self with 'elev' to run hidden PowerShell (this branch should not normally run).
-powershell -NoProfile -Command "Start-Process -FilePath '%~f0' -ArgumentList 'elev' -Verb RunAs"
-exit /b
+:: --- output file ---
+set "OUTFILE=%USERPROFILE%\Downloads\wlan_passwords.txt"
+if not exist "%USERPROFILE%\Downloads" mkdir "%USERPROFILE%\Downloads" 2>nul
+( 
+  echo Exported on: %DATE% %TIME%
+) > "%OUTFILE%"
+
+:: --- gather profiles ---
+set "TMP_PROFILES=%TEMP%\wlan_profiles.tmp"
+netsh wlan show profiles > "%TMP_PROFILES%" 2>nul
+
+if not exist "%TMP_PROFILES%" (
+    echo Failed to enumerate WLAN profiles. >> "%OUTFILE%"
+    echo No profiles found.
+    exit /b 0
+)
+
+:: Look for typical English marker "All User Profile".
+findstr /c:"All User Profile" "%TMP_PROFILES%" > "%TEMP%\wlan_profiles_lines.tmp" 2>nul
+
+if not exist "%TEMP%\wlan_profiles_lines.tmp" (
+    echo No WLAN profiles found. >> "%OUTFILE%"
+    del "%TMP_PROFILES%" 2>nul
+    exit /b 0
+)
+
+for /f "usebackq tokens=1* delims=:" %%A in ("%TEMP%\wlan_profiles_lines.tmp") do (
+    set "RAWSSID=%%B"
+    if defined RAWSSID (
+        for /f "tokens=* delims= " %%S in ("!RAWSSID!") do (
+            set "SSID=%%S"
+            rem remove surrounding quotes if any
+            if "!SSID:~0,1!"=="^"" set "SSID=!SSID:~1,-1!"
+            if defined SSID (
+                rem query profile details
+                set "TMP_INFO=%TEMP%\wlan_info.tmp"
+                netsh wlan show profile name="!SSID!" key=clear > "%TMP_INFO%" 2>nul
+
+                if exist "%TMP_INFO%" (
+                    rem look for "Key Content" line
+                    findstr /c:"Key Content" "%TMP_INFO%" > "%TEMP%\wlan_key_line.tmp" 2>nul
+                    if exist "%TEMP%\wlan_key_line.tmp" (
+                        for /f "usebackq tokens=1* delims=:" %%K in ("%TEMP%\wlan_key_line.tmp") do (
+                            set "RAWKEY=%%L"
+                            for /f "tokens=* delims= " %%P in ("!RAWKEY!") do set "KEY=%%P"
+                            if defined KEY (
+                                (
+                                  echo.
+                                  echo SSID: !SSID!
+                                  echo Password: !KEY!
+                                  echo ------------------------
+                                ) >> "%OUTFILE%"
+                            )
+                        )
+                        del "%TEMP%\wlan_key_line.tmp" 2>nul
+                    )
+                    del "%TMP_INFO%" 2>nul
+                )
+            )
+        )
+    )
+)
+
+del "%TMP_PROFILES%" 2>nul
+del "%TEMP%\wlan_profiles_lines.tmp" 2>nul
+
+echo Done. Results saved to: "%OUTFILE%"
+exit /b 0
