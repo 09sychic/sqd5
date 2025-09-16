@@ -45,6 +45,7 @@ $outFile = Join-Path $env:USERPROFILE "Downloads\wlan_passwords.txt"
 function Write-Log {
     param([string]$Text)
     Write-Host $Text
+    $timeStamped = ("[{0}] {1}" -f (Get-Date -Format "yyyy-MM-dd HH:mm:ss"), $Text)
     $timeStamped | Out-File -FilePath $outFile -Append -Encoding UTF8
 }
 
