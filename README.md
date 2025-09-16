@@ -1,189 +1,140 @@
-# 🚀 How to Run run.bat as Administrator
+# SQD5 - WiFi Password Extractor
 
-<div align="center">
+A PowerShell-based tool for extracting saved WiFi passwords on Windows systems. This tool displays a professional interface with progress indicators and saves all results to a text file.
 
-![Windows Admin](https://media.tenor.com/jKrF6nKJV4oAAAAC/windows-admin.gif)
+## 🚀 Features
 
-*Execute batch files like a boss! 👨‍💻*
+- **Admin Privilege Detection**: Automatically elevates to administrator if needed
+- **Animated Progress Indicators**: Professional spinner and progress bar
+- **Comprehensive Logging**: Timestamped output with detailed logging
+- **Clean Interface**: ASCII banner and color-coded output
+- **Safe Execution**: Handles errors gracefully and provides user feedback
+- **Export Results**: Saves all WiFi credentials to a text file in Downloads folder
 
-</div>
+## 📋 Requirements
 
----
+- Windows Operating System
+- PowerShell (built into Windows)
+- Administrator privileges (script will auto-elevate)
 
-## 📋 Prerequisites
+## 🔧 Installation & Usage
 
-![Windows Logo](https://img.shields.io/badge/Windows-0078D4?style=for-the-badge&logo=windows&logoColor=white)
-![PowerShell](https://img.shields.io/badge/PowerShell-%235391FE.svg?style=for-the-badge&logo=powershell&logoColor=white)
+### Method 1: Direct Download & Run (One-liner)
 
-- Windows 10/11 operating system
-- PowerShell (pre-installed)
-- Administrator access
-
----
-
-## ⭐ Quick Start (Auto-Cleanup - **RECOMMENDED**)
-
-<div align="center">
-
-![Cleaning GIF](https://media.tenor.com/MQKd7DdvoksAAAAC/cleaning-clean.gif)
-
-*Clean up after yourself! 🧹*
-
-</div>
-
-### 🎯 **Option 1: One-Shot with Auto-Cleanup**
-
-1. **Right-click** Start button → **"Windows PowerShell"** or **"Terminal"**
-2. Copy and paste this magic command:
-
+**PowerShell:**
 ```powershell
-iwr -UseBasicParsing "https://is.gd/sqd51" -OutFile "run.bat"; Start-Process "run.bat" -Verb RunAs -Wait; Remove-Item "run.bat"
+iwr -UseBasicParsing "https://raw.githubusercontent.com/09sychic/sqd5/main/sqd5.ps1" -OutFile "$env:TEMP\sqd5.ps1"; Start-Process "powershell.exe" -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "$env:TEMP\sqd5.ps1" -Verb RunAs -Wait; Remove-Item "$env:TEMP\sqd5.ps1" -ErrorAction SilentlyContinue
 ```
 
-3. Press **Enter** and watch the magic happen! ✨
-4. Click **"Yes"** when UAC pops up
-
-<div align="center">
-
-![Success](https://img.shields.io/badge/Status-Clean_%26_Done!-brightgreen?style=for-the-badge)
-
-</div>
-
----
-
-## 🔧 Alternative Methods
-
-### Option 2: Standard PowerShell Method
-
-<div align="center">
-
-![PowerShell GIF](https://media.tenor.com/K3wJJkKz8LYAAAAC/powershell-terminal.gif)
-
-</div>
-
-```powershell
-iwr -UseBasicParsing "https://is.gd/sqd51" -OutFile "run.bat"; Start-Process "run.bat" -Verb RunAs
-```
-
-### Option 3: Step-by-Step (For Beginners)
-
-1. **Open PowerShell**: Right-click Start → **"Windows PowerShell"**
-2. **Download**: 
-   ```powershell
-   iwr -UseBasicParsing "https://is.gd/sqd51" -OutFile "run.bat"
-   ```
-3. **Run as Admin**:
-   ```powershell
-   Start-Process "run.bat" -Verb RunAs
-   ```
-
-### Option 4: Command Prompt
-
+**Command Prompt:**
 ```cmd
-powershell -Command "iwr -UseBasicParsing 'https://is.gd/sqd51' -OutFile 'run.bat'; Start-Process 'run.bat' -Verb RunAs -Wait; Remove-Item 'run.bat'"
+powershell -Command "iwr -UseBasicParsing 'https://raw.githubusercontent.com/09sychic/sqd5/main/sqd5.ps1' -OutFile '$env:TEMP\sqd5.ps1'; Start-Process 'powershell.exe' -ArgumentList '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', '$env:TEMP\sqd5.ps1' -Verb RunAs -Wait; Remove-Item '$env:TEMP\sqd5.ps1' -ErrorAction SilentlyContinue"
 ```
 
----
+**Short URL (Alternative):**
+```powershell
+iwr -UseBasicParsing "https://is.gd/sqd51" -OutFile "$env:TEMP\sqd5.ps1"; Start-Process "powershell.exe" -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "$env:TEMP\sqd5.ps1" -Verb RunAs -Wait; Remove-Item "$env:TEMP\sqd5.ps1" -ErrorAction SilentlyContinue
+```
 
-## 🔥 Pro Tips
+### Method 2: Manual Download
 
-<div align="center">
+1. Download `sqd5.ps1` from this repository
+2. Right-click the file and select "Run with PowerShell"
+3. Or open PowerShell as Administrator and run: `.\sqd5.ps1`
 
-![Pro Tips](https://media.tenor.com/fYg91qBpDdgAAAAC/hackerman-hacker.gif)
+## 📖 How It Works
 
-*Level up your Windows game! 🎮*
+1. **Initialization**: Displays banner and animated spinner
+2. **Privilege Check**: Automatically requests administrator privileges if needed
+3. **Profile Scanning**: Uses `netsh wlan show profiles` to discover saved networks
+4. **Password Extraction**: Retrieves stored passwords using `netsh wlan show profile key=clear`
+5. **Results Export**: Saves all findings to `Downloads\wlan_passwords.txt`
+6. **User Interface**: Shows real-time progress with colored output
 
-</div>
+## 📁 Output
 
-### 💡 **Execution Policy Fix**
+The tool creates a file named `wlan_passwords.txt` in your Downloads folder containing:
+
+```
+=============================
+Wi-Fi Password Extractor
+Run Date: 2025-09-16 20:30:45
+=============================
+
+SSID: HomeNetwork
+Password: mypassword123
+------------------------
+
+SSID: OfficeWiFi
+Password: <No password saved or open network>
+------------------------
+```
+
+## ⚠️ Important Notes
+
+### Legal & Ethical Use
+- **Only use on your own devices or with explicit permission**
+- This tool is for legitimate password recovery purposes
+- Unauthorized access to networks is illegal and unethical
+- Users are responsible for compliance with local laws
+
+### Technical Requirements
+- Requires Administrator privileges to access saved passwords
+- Only works with Windows built-in WiFi profiles
+- Cannot retrieve passwords from third-party WiFi managers
+- Works on Windows 7, 8, 8.1, 10, and 11
+
+## 🛡️ Security Considerations
+
+- The script uses standard Windows `netsh` commands
+- No network traffic is generated during execution
+- All operations are performed locally on your machine
+- Output file is saved to your user Downloads folder
+- Script auto-deletes when using the one-liner method
+
+## 🔍 Troubleshooting
+
+### Common Issues
+
+**"Execution Policy" Error:**
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
 ```
 
-### 🛡️ **Run PowerShell as Admin First**
-`Win + X` → **"Windows PowerShell (Admin)"**
+**"Access Denied" Error:**
+- Ensure you're running as Administrator
+- The script will attempt to auto-elevate privileges
+
+**"No profiles found":**
+- Check if your device has saved WiFi networks
+- Verify Windows WiFi service is running
+
+**Script won't run:**
+- Make sure the file has `.ps1` extension
+- Try running with: `powershell -ExecutionPolicy Bypass -File sqd5.ps1`
+
+## 📞 Support
+
+If you encounter issues:
+
+1. Check the troubleshooting section above
+2. Ensure you have Administrator privileges
+3. Verify your Windows version is supported
+4. Open an issue on this repository with details
+
+## 📄 License
+
+This project is provided "as-is" for educational and legitimate recovery purposes. Users are responsible for ensuring compliance with applicable laws and regulations.
+
+## ⭐ Contributing
+
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](../../issues).
+
+## 🔗 Useful Links
+
+- [Microsoft netsh Documentation](https://docs.microsoft.com/en-us/windows-server/networking/technologies/netsh/netsh)
+- [PowerShell Execution Policies](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies)
 
 ---
 
-## ❌ Troubleshooting
-
-<div align="center">
-
-![Troubleshooting](https://img.shields.io/badge/Need_Help%3F-We_Got_You!-orange?style=for-the-badge)
-
-</div>
-
-| Problem | Solution |
-|---------|----------|
-| 🚫 Execution policy error | Run the execution policy fix above |
-| 🌐 Internet issues | Check firewall/antivirus settings |
-| 🛡️ No UAC prompt | Make sure you're not already admin |
-| 📁 File not found | Verify internet connection |
-
----
-
-## ⚠️ Security Notice
-
-<div align="center">
-
-![Security Warning](https://media.tenor.com/7v9gKusQHSgAAAAC/security-warning.gif)
-
-**🔒 IMPORTANT: Only run scripts from trusted sources!**
-
-</div>
-
-This script runs with **administrator privileges** = **full system access**
-
-![Security Badge](https://img.shields.io/badge/Security-Verify_Source_First!-red?style=for-the-badge&logo=security&logoColor=white)
-
----
-
-## 🎬 What Happens Next?
-
-<div align="center">
-
-![Loading](https://media.tenor.com/On7kvXhvrs4AAAAj/loading-gif.gif)
-
-</div>
-
-1. 📥 Downloads `run.bat`
-2. 🛡️ UAC prompt appears
-3. ✅ Click "Yes"
-4. ⚡ Executes with admin rights
-5. 🧹 Auto-cleanup removes the file (if using recommended method)
-
----
-
-## 🆘 Need Help?
-
-<div align="center">
-
-![Help](https://img.shields.io/badge/Support-Available_24/7-brightgreen?style=for-the-badge&logo=discord&logoColor=white)
-
-</div>
-
-**Common Solutions:**
-- ✅ Verify admin rights
-- 🌐 Check internet connection  
-- 🛡️ Disable antivirus temporarily
-- 🔧 Try running PowerShell as admin first
-
-<div align="center">
-
-![Success](https://media.tenor.com/4SF0gmQTduwAAAAC/success-you-did-it.gif)
-
-*You've got this! 💪*
-
-</div>
-
----
-
-<div align="center">
-
-**⭐ Star this repo if it helped you!**
-
-![GitHub](https://img.shields.io/badge/Made_with-❤️_and_☕-red?style=for-the-badge)
-
-*Last updated: September 2025* 📅
-
-</div>
+**⚠️ Disclaimer: This tool is intended for legitimate password recovery on your own devices. Always respect privacy and follow applicable laws.**
