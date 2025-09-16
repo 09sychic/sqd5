@@ -1,25 +1,21 @@
 # sqd5.ps1
-# Extract Wi-Fi profiles and passwords, show banner + spinner, write results only to file.
-# Save next to run.bat. run.bat will download and run this file elevated.
+# Extract Wi-Fi profiles and passwords, show banner + spinner, log output.
+# Save in any folder. Run elevated or the script will relaunch itself as admin.
 
-# Ensure UTF-8 output
-chcp 65001 > $null
-[Console]::OutputEncoding = [System.Text.UTF8Encoding]::UTF8
-$PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
-
-# ---------- simple ASCII banner ----------
+# ---------- ASCII banner ----------
 $banner = @"
 ===========================================
    WIFI PASSWORD EXTRACTOR - SQD5 TOOL
 ===========================================
 "@
+
 Write-Host $banner -ForegroundColor Cyan
 
 # ---------- small animated spinner ----------
 function Show-Spinner {
     param(
-        [int]$Seconds = 1,
-        [string]$Message = "Working..."
+        [int]$Seconds = 2,
+        [string]$Message = "Loading..."
     )
     $frames = @('/','-','\','|')
     $end = (Get-Date).AddSeconds($Seconds)
@@ -27,11 +23,12 @@ function Show-Spinner {
     while ((Get-Date) -lt $end) {
         $frame = $frames[$i % $frames.Count]
         Write-Host -NoNewline ("`r{0} {1}" -f $frame, $Message)
-        Start-Sleep -Milliseconds 120
+        Start-Sleep -Milliseconds 150
         $i++
     }
-    Write-Host ("`r{0} {1}`n" -f ' ', $Message)
+    Write-Host "`r$Message`r"  # clear spinner line (leave the message)
 }
+Show-Spinner -Seconds 2 -Message "Preparing script..."
 
 # ---------- admin check and self-elevate ----------
 $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
@@ -42,14 +39,23 @@ if (-not $principal.IsInRole([Security.Principal.WindowsBuiltinRole]::Administra
     exit 1
 }
 
-# ---------- output file (results only) ----------
+# ---------- output file and logger ----------
 $outFile = Join-Path $env:USERPROFILE "Downloads\wlan_passwords.txt"
-# initialize file with simple header (no timestamps, no logs)
-"=============================`nWi-Fi Password Extractor`n=============================" | Out-File -FilePath $outFile -Encoding UTF8 -Force
+
+function Write-Log {
+    param([string]$Text)
+    Write-Host $Text
+    $timeStamped | Out-File -FilePath $outFile -Append -Encoding UTF8
+}
+
+Try {
+    "=============================`nWi-Fi Password Extractor`n=============================`n" | Out-File -FilePath $outFile -Encoding UTF8 -Force
+} Catch {
+    Write-Host "Cannot write to $outFile. Check permissions."
+    exit 1
+}
 
 # ---------- gather profiles ----------
-Write-Host "[*] Gathering WLAN profiles..."
-Show-Spinner -Seconds 1 -Message "Scanning profiles"
 
 Try {
     $profiles = netsh wlan show profiles 2>$null |
@@ -60,19 +66,20 @@ Try {
 }
 
 if (-not $profiles) {
-    "No WLAN profiles found." | Out-File -FilePath $outFile -Append -Encoding UTF8
-    Write-Host "[!] No WLAN profiles found. Results file updated."
-    "`n=============================`nVisit README: https://github.com/09sychic/sqd5/blob/main/README.md`n=============================" | Out-File -FilePath $outFile -Append -Encoding UTF8
+    Write-Log "No WLAN profiles found."
+    "`n=============================`nDone. No profiles found.`nVisit README: https://github.com/09sychic/sqd5/blob/main/README.md`n=============================" | Out-File -FilePath $outFile -Append -Encoding UTF8
     exit 0
 }
 
-# ---------- process profiles ----------
+# ---------- process profiles with Write-Progress ----------
 $total = $profiles.Count
 $i = 0
 foreach ($p in $profiles) {
     $i++
-    Write-Host "[*] Processing SSID ($i of $total): $p"
-    Show-Spinner -Seconds 0.8 -Message "Processing $p"
+    $percent = [int](($i / $total) * 100)
+    Write-Progress -Activity "" -Status "" -PercentComplete $percent
+
+    Write-Log ""
 
     Try {
         $info = netsh wlan show profile name="$p" key=clear 2>$null
@@ -92,13 +99,14 @@ foreach ($p in $profiles) {
         $keyLine = "<No password saved or open network>"
     }
 
-    # append only result lines to file
     "`n$ssidLine`nPassword: $keyLine`n------------------------" | Out-File -FilePath $outFile -Append -Encoding UTF8
-
-    Write-Host ("[✓] Saved: {0}" -f $p)
+    Write-Host ("Saved: {0}" -f $p)
 }
 
-# ---------- footer ----------
+# clear progress
+Write-Progress -Activity "Extracting WLAN profiles" -Completed
+
+# ---------- footer with === ASCII style and README link ----------
 $footer = @"
 `n============================= 
 Done. Results saved to: $outFile
@@ -106,5 +114,6 @@ Visit README for more info:
 https://github.com/09sychic/sqd5/blob/main/README.md
 =============================
 "@
+
 $footer | Out-File -FilePath $outFile -Append -Encoding UTF8
 Write-Host $footer
