@@ -77,9 +77,9 @@ $i = 0
 foreach ($p in $profiles) {
     $i++
     $percent = [int](($i / $total) * 100)
-    Write-Progress -Activity "" -Status "" -PercentComplete $percent
+    Write-Progress -Activity "‎ " -Status "" -PercentComplete $percent
 
-    Write-Log ""
+    Write-Log "‎ "
 
     Try {
         $info = netsh wlan show profile name="$p" key=clear 2>$null
