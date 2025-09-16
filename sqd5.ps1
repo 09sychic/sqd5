@@ -26,7 +26,7 @@ function Show-Spinner {
         Start-Sleep -Milliseconds 150
         $i++
     }
-    Write-Host "`r$Message`r"  # clear spinner line (leave the message)
+    Write-Host "`r$(' ' * ($Message.Length + 2))`r"  # clear spinner line completely
 }
 Show-Spinner -Seconds 2 -Message "Preparing script..."
 
@@ -57,18 +57,23 @@ Try {
 }
 
 # ---------- gather profiles ----------
-
 Try {
     $profiles = netsh wlan show profiles 2>$null |
         Select-String "All User Profile" |
-        ForEach-Object { $_.ToString().Split(':',2)[1].Trim() } | Sort-Object -Unique
+        ForEach-Object { 
+            $line = $_.ToString()
+            if ($line -match ":\s*(.+)$") {
+                $matches[1].Trim()
+            }
+        } | Where-Object { $_ -ne $null -and $_ -ne "" } | Sort-Object -Unique
 } Catch {
     $profiles = @()
 }
 
-if (-not $profiles) {
+if (-not $profiles -or $profiles.Count -eq 0) {
     Write-Log "No WLAN profiles found."
     "`n=============================`nDone. No profiles found.`nVisit README: https://github.com/09sychic/sqd5/blob/main/README.md`n=============================" | Out-File -FilePath $outFile -Append -Encoding UTF8
+    Read-Host "Press Enter to exit"
     exit 0
 }
 
@@ -78,9 +83,9 @@ $i = 0
 foreach ($p in $profiles) {
     $i++
     $percent = [int](($i / $total) * 100)
-    Write-Progress -Activity "Extracting WLAN profiles" -Status "" -PercentComplete $percent
+    Write-Progress -Activity "Extracting WLAN profiles" -Status "Processing: $p ($i of $total)" -PercentComplete $percent
 
-    Write-Log "Processing profile $i of $total $p"
+    Write-Log "Processing profile $i of $total`: $p"
 
     Try {
         $info = netsh wlan show profile name="$p" key=clear 2>$null
@@ -91,17 +96,18 @@ foreach ($p in $profiles) {
     $ssidLine = "SSID: $p"
     $keyLine = $null
     if ($info) {
-        $keyLine = ($info | Select-String "Key Content" | ForEach-Object {
-            $_.ToString().Split(':',2)[1].Trim()
-        }) -join ''
+        $keyContentLine = $info | Select-String "Key Content"
+        if ($keyContentLine) {
+            $keyLine = $keyContentLine.ToString().Split(':',2)[1].Trim()
+        }
     }
 
-    if (-not $keyLine) {
+    if (-not $keyLine -or $keyLine -eq "") {
         $keyLine = "<No password saved or open network>"
     }
 
     "`n$ssidLine`nPassword: $keyLine`n------------------------" | Out-File -FilePath $outFile -Append -Encoding UTF8
-    Write-Host ("Saved: {0}" -f $p)
+    Write-Host ("Saved: {0}" -f $p) -ForegroundColor Green
 }
 
 # clear progress
@@ -117,4 +123,7 @@ https://github.com/09sychic/sqd5/blob/main/README.md
 "@
 
 $footer | Out-File -FilePath $outFile -Append -Encoding UTF8
-Write-Host $footer
+Write-Host $footer -ForegroundColor Yellow
+
+# Pause so user can see results before window closes
+Read-Host "Press Enter to exit"
