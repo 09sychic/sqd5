@@ -4,19 +4,9 @@
 
 # ---------- ASCII banner ----------
 $banner = @"
-░██████╗░██████╗░██████╗░███████╗  ░██╗░░░░░░░██╗██╗███████╗██╗
-██╔════╝██╔═══██╗██╔══██╗██╔════╝  ░██║░░██╗░░██║██║██╔════╝██║
-╚█████╗░██║██╗██║██║░░██║██████╗░  ░╚██╗████╗██╔╝██║█████╗░░██║
-░╚═══██╗╚██████╔╝██║░░██║╚════██╗  ░░████╔═████║░██║██╔══╝░░██║
-██████╔╝░╚═██╔═╝░██████╔╝██████╔╝  ░░╚██╔╝░╚██╔╝░██║██║░░░░░██║
-╚═════╝░░░░╚═╝░░░╚═════╝░╚═════╝░  ░░░╚═╝░░░╚═╝░░╚═╝╚═╝░░░░░╚═╝
-
-███████╗██╗░░██╗████████╗██████╗░░█████╗░░█████╗░████████╗░█████╗░██████╗░
-██╔════╝╚██╗██╔╝╚══██╔══╝██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝██╔══██╗██╔══██╗
-█████╗░░░╚███╔╝░░░░██║░░░██████╔╝███████║██║░░╚═╝░░░██║░░░██║░░██║██████╔╝
-██╔══╝░░░██╔██╗░░░░██║░░░██╔══██╗██╔══██║██║░░██╗░░░██║░░░██║░░██║██╔══██╗
-███████╗██╔╝╚██╗░░░██║░░░██║░░██║██║░░██║╚█████╔╝░░░██║░░░╚█████╔╝██║░░██║
-╚══════╝╚═╝░░╚═╝░░░╚═╝░░░╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░░░░╚═╝░░░░╚════╝░╚═╝░░╚═╝
+===========================================
+   WIFI PASSWORD EXTRACTOR - SQD5 TOOL
+===========================================
 "@
 
 Write-Host $banner -ForegroundColor Cyan
@@ -54,7 +44,6 @@ $outFile = Join-Path $env:USERPROFILE "Downloads\wlan_passwords.txt"
 
 function Write-Log {
     param([string]$Text)
-    $timeStamped = ("[{0}] {1}" -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $Text)
     Write-Host $Text
     $timeStamped | Out-File -FilePath $outFile -Append -Encoding UTF8
 }
@@ -67,7 +56,7 @@ Try {
 }
 
 # ---------- gather profiles ----------
-Write-Log "Gathering WLAN profiles..."
+
 Try {
     $profiles = netsh wlan show profiles 2>$null |
         Select-String "All User Profile" |
@@ -88,9 +77,9 @@ $i = 0
 foreach ($p in $profiles) {
     $i++
     $percent = [int](($i / $total) * 100)
-    Write-Progress -Activity "/n" -Status "/n" -PercentComplete $percent
+    Write-Progress -Activity "" -Status "" -PercentComplete $percent
 
-    Write-Log "/n"
+    Write-Log ""
 
     Try {
         $info = netsh wlan show profile name="$p" key=clear 2>$null
