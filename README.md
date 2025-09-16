@@ -1,140 +1,229 @@
-# SQD5 - WiFi Password Extractor
+<div align="center">
 
-A PowerShell-based tool for extracting saved WiFi passwords on Windows systems. This tool displays a professional interface with progress indicators and saves all results to a text file.
+# 🔐 SQD5 WiFi Password Extractor
 
-## 🚀 Features
+<img src="https://img.shields.io/badge/PowerShell-5.1%2B-blue?style=for-the-badge&logo=powershell" alt="PowerShell">
+<img src="https://img.shields.io/badge/Windows-7%20%7C%208%20%7C%2010%20%7C%2011-0078d4?style=for-the-badge&logo=windows" alt="Windows">
+<img src="https://img.shields.io/github/license/09sychic/sqd5?style=for-the-badge" alt="License">
+<img src="https://img.shields.io/github/stars/09sychic/sqd5?style=for-the-badge" alt="Stars">
 
-- **Admin Privilege Detection**: Automatically elevates to administrator if needed
-- **Animated Progress Indicators**: Professional spinner and progress bar
-- **Comprehensive Logging**: Timestamped output with detailed logging
-- **Clean Interface**: ASCII banner and color-coded output
-- **Safe Execution**: Handles errors gracefully and provides user feedback
-- **Export Results**: Saves all WiFi credentials to a text file in Downloads folder
+### *Extract saved WiFi passwords like a pro* 🚀
 
-## 📋 Requirements
+<img src="https://user-images.githubusercontent.com/74038190/212257454-16e3712e-945a-4ca2-b238-408ad0bf87e6.gif" width="100">
 
-- Windows Operating System
-- PowerShell (built into Windows)
-- Administrator privileges (script will auto-elevate)
+</div>
 
-## 🔧 Installation & Usage
+---
 
-### Method 1: Direct Download & Run (One-liner)
+## 🎯 Quick Start
 
-**PowerShell:**
-```powershell
-iwr -UseBasicParsing "https://raw.githubusercontent.com/09sychic/sqd5/main/sqd5.ps1" -OutFile "$env:TEMP\sqd5.ps1"; Start-Process "powershell.exe" -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "$env:TEMP\sqd5.ps1" -Verb RunAs -Wait; Remove-Item "$env:TEMP\sqd5.ps1" -ErrorAction SilentlyContinue
-```
+<table>
+<tr>
+<td width="50%">
 
-**Command Prompt:**
-```cmd
-powershell -Command "iwr -UseBasicParsing 'https://raw.githubusercontent.com/09sychic/sqd5/main/sqd5.ps1' -OutFile '$env:TEMP\sqd5.ps1'; Start-Process 'powershell.exe' -ArgumentList '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', '$env:TEMP\sqd5.ps1' -Verb RunAs -Wait; Remove-Item '$env:TEMP\sqd5.ps1' -ErrorAction SilentlyContinue"
-```
+### 🏃‍♂️ One-Line Run
 
-**Short URL (Alternative):**
 ```powershell
 iwr -UseBasicParsing "https://is.gd/sqd51" -OutFile "$env:TEMP\sqd5.ps1"; Start-Process "powershell.exe" -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "$env:TEMP\sqd5.ps1" -Verb RunAs -Wait; Remove-Item "$env:TEMP\sqd5.ps1" -ErrorAction SilentlyContinue
 ```
 
-### Method 2: Manual Download
+</td>
+<td width="50%">
 
-1. Download `sqd5.ps1` from this repository
-2. Right-click the file and select "Run with PowerShell"
-3. Or open PowerShell as Administrator and run: `.\sqd5.ps1`
+### 📱 CMD Version
 
-## 📖 How It Works
-
-1. **Initialization**: Displays banner and animated spinner
-2. **Privilege Check**: Automatically requests administrator privileges if needed
-3. **Profile Scanning**: Uses `netsh wlan show profiles` to discover saved networks
-4. **Password Extraction**: Retrieves stored passwords using `netsh wlan show profile key=clear`
-5. **Results Export**: Saves all findings to `Downloads\wlan_passwords.txt`
-6. **User Interface**: Shows real-time progress with colored output
-
-## 📁 Output
-
-The tool creates a file named `wlan_passwords.txt` in your Downloads folder containing:
-
-```
-=============================
-Wi-Fi Password Extractor
-Run Date: 2025-09-16 20:30:45
-=============================
-
-SSID: HomeNetwork
-Password: mypassword123
-------------------------
-
-SSID: OfficeWiFi
-Password: <No password saved or open network>
-------------------------
+```cmd
+powershell -Command "iwr -UseBasicParsing 'https://is.gd/sqd51' -OutFile '$env:TEMP\sqd5.ps1'; Start-Process 'powershell.exe' -ArgumentList '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', '$env:TEMP\sqd5.ps1' -Verb RunAs -Wait; Remove-Item '$env:TEMP\sqd5.ps1' -ErrorAction SilentlyContinue"
 ```
 
-## ⚠️ Important Notes
+</td>
+</tr>
+</table>
 
-### Legal & Ethical Use
-- **Only use on your own devices or with explicit permission**
-- This tool is for legitimate password recovery purposes
-- Unauthorized access to networks is illegal and unethical
-- Users are responsible for compliance with local laws
-
-### Technical Requirements
-- Requires Administrator privileges to access saved passwords
-- Only works with Windows built-in WiFi profiles
-- Cannot retrieve passwords from third-party WiFi managers
-- Works on Windows 7, 8, 8.1, 10, and 11
-
-## 🛡️ Security Considerations
-
-- The script uses standard Windows `netsh` commands
-- No network traffic is generated during execution
-- All operations are performed locally on your machine
-- Output file is saved to your user Downloads folder
-- Script auto-deletes when using the one-liner method
-
-## 🔍 Troubleshooting
-
-### Common Issues
-
-**"Execution Policy" Error:**
-```powershell
-Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
-```
-
-**"Access Denied" Error:**
-- Ensure you're running as Administrator
-- The script will attempt to auto-elevate privileges
-
-**"No profiles found":**
-- Check if your device has saved WiFi networks
-- Verify Windows WiFi service is running
-
-**Script won't run:**
-- Make sure the file has `.ps1` extension
-- Try running with: `powershell -ExecutionPolicy Bypass -File sqd5.ps1`
-
-## 📞 Support
-
-If you encounter issues:
-
-1. Check the troubleshooting section above
-2. Ensure you have Administrator privileges
-3. Verify your Windows version is supported
-4. Open an issue on this repository with details
-
-## 📄 License
-
-This project is provided "as-is" for educational and legitimate recovery purposes. Users are responsible for ensuring compliance with applicable laws and regulations.
-
-## ⭐ Contributing
-
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](../../issues).
-
-## 🔗 Useful Links
-
-- [Microsoft netsh Documentation](https://docs.microsoft.com/en-us/windows-server/networking/technologies/netsh/netsh)
-- [PowerShell Execution Policies](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies)
+<div align="center">
+<img src="https://user-images.githubusercontent.com/74038190/212257472-08e52665-c503-4bd9-aa20-f5a4dae769b5.gif" width="100">
+</div>
 
 ---
 
-**⚠️ Disclaimer: This tool is intended for legitimate password recovery on your own devices. Always respect privacy and follow applicable laws.**
+## 🌟 Features That Make You Go "WOW!"
+
+<div align="center">
+
+| 🎨 Feature | 📝 Description | 🔥 Status |
+|:----------:|:-------------:|:---------:|
+| 🚀 **Auto Admin** | Self-elevates to admin mode | ✅ Ready |
+| 🎪 **Cool Spinner** | Animated loading indicators | ✅ Ready |
+| 📊 **Progress Bar** | Real-time extraction progress | ✅ Ready |
+| 💾 **Smart Export** | Auto-saves to Downloads folder | ✅ Ready |
+| 🎨 **Colorful UI** | Eye-candy terminal interface | ✅ Ready |
+| 🛡️ **Error Handling** | Bulletproof error management | ✅ Ready |
+
+</div>
+
+---
+
+## 🎬 Demo Preview
+
+<div align="center">
+
+```
+===========================================
+   WIFI PASSWORD EXTRACTOR - SQD5 TOOL
+===========================================
+
+/ Loading...
+
+Running with administrator privileges...
+✓ Saved: HomeNetwork_5G
+✓ Saved: OfficeWiFi
+✓ Saved: GuestNetwork
+
+=============================
+Extraction Complete!
+Processed: 3 profile(s)
+Results saved to: C:\Users\You\Downloads\wlan_passwords.txt
+=============================
+```
+
+<img src="https://user-images.githubusercontent.com/74038190/212257465-7ce8d493-cac5-494e-982a-5a9deb852c4b.gif" width="100">
+
+</div>
+
+---
+
+## 📋 System Requirements
+
+<div align="center">
+
+<img src="https://img.shields.io/badge/OS-Windows_7+-0078d4?style=flat-square&logo=windows" alt="Windows 7+">
+<img src="https://img.shields.io/badge/PowerShell-5.1+-012456?style=flat-square&logo=powershell" alt="PowerShell 5.1+">
+<img src="https://img.shields.io/badge/Privileges-Administrator-red?style=flat-square&logo=windows-terminal" alt="Admin Required">
+
+</div>
+
+---
+
+## 🎮 How to Use
+
+<details>
+<summary>📖 <b>Method 1: Lightning Fast (Recommended)</b></summary>
+
+### PowerShell One-Liner:
+```powershell
+iwr -UseBasicParsing "https://raw.githubusercontent.com/09sychic/sqd5/main/sqd5.ps1" -OutFile "$env:TEMP\sqd5.ps1"; Start-Process "powershell.exe" -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "$env:TEMP\sqd5.ps1" -Verb RunAs -Wait; Remove-Item "$env:TEMP\sqd5.ps1" -ErrorAction SilentlyContinue
+```
+
+</details>
+
+<details>
+<summary>📁 <b>Method 2: Manual Download</b></summary>
+
+1. Download `sqd5.ps1`
+2. Right-click → "Run with PowerShell"
+3. Watch the magic happen! ✨
+
+</details>
+
+---
+
+## 📊 Star History
+
+<div align="center">
+
+<a href="https://github.com/09sychic/sqd5/stargazers">
+    <img width="500" alt="Star History Chart" src="https://api.star-history.com/svg?repos=09sychic/sqd5&type=Date">
+</a>
+
+</div>
+
+---
+
+## 🔧 Troubleshooting
+
+<div align="center">
+
+| 🚨 Problem | 💡 Solution |
+|:----------:|:-----------:|
+| **Execution Policy Error** | Use: `Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process` |
+| **Access Denied** | Run PowerShell as Administrator |
+| **No Profiles Found** | Check if WiFi networks are saved in Windows |
+| **Script Won't Start** | Ensure file has `.ps1` extension |
+
+</div>
+
+---
+
+## 📈 Project Stats
+
+<div align="center">
+
+<img src="https://github-readme-stats.vercel.app/api?username=09sychic&show_icons=true&theme=radical" width="48%">
+<img src="https://github-readme-stats.vercel.app/api/top-langs/?username=09sychic&layout=compact&theme=radical" width="48%">
+
+</div>
+
+---
+
+## 🤝 Contributing
+
+<div align="center">
+
+<img src="https://user-images.githubusercontent.com/74038190/212257468-1e9a91f1-b626-4baa-b15d-5c385dfa7cd2.gif" width="100">
+
+**Found a bug? Have an idea? Let's make SQD5 even better!**
+
+<a href="https://github.com/09sychic/sqd5/issues/new">
+<img src="https://img.shields.io/badge/Report%20Bug-red?style=for-the-badge&logo=github" alt="Report Bug">
+</a>
+<a href="https://github.com/09sychic/sqd5/issues/new">
+<img src="https://img.shields.io/badge/Request%20Feature-blue?style=for-the-badge&logo=github" alt="Request Feature">
+</a>
+
+</div>
+
+---
+
+## ⚖️ Legal Disclaimer
+
+<div align="center">
+
+<img src="https://user-images.githubusercontent.com/74038190/212257460-738ff738-247f-4445-a718-cdd0ca76e2db.gif" width="100">
+
+</div>
+
+> [!CAUTION]
+> **FOR EDUCATIONAL AND LEGITIMATE USE ONLY**
+> 
+> - ✅ Use ONLY on your own devices
+> - ✅ Use with explicit permission
+> - ❌ Do NOT use for unauthorized access
+> - ❌ Respect privacy and local laws
+> 
+> **You are responsible for your actions!** 🚨
+
+---
+
+## 📄 License
+
+<div align="center">
+
+<img src="https://img.shields.io/github/license/09sychic/sqd5?style=for-the-badge&color=brightgreen" alt="License">
+
+**This project is licensed under the MIT License**
+
+</div>
+
+---
+
+<div align="center">
+
+### Made with ❤️ by [09sychic](https://github.com/09sychic)
+
+<img src="https://user-images.githubusercontent.com/74038190/212257454-16e3712e-945a-4ca2-b238-408ad0bf87e6.gif" width="100">
+
+**⭐ Star this repo if it helped you! ⭐**
+
+<img src="https://komarev.com/ghpvc/?username=09sychic&style=for-the-badge&color=brightgreen" alt="Profile Views">
+
+</div>
